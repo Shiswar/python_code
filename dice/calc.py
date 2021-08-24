@@ -9,13 +9,13 @@ data = {
     "Payout if win":[]
 }
 
-bet= 0.005
+bet= 0.0001
 total_losses=0
 chance = 0.20
 multiplier = 1.25
 payout_multiplier = 4.95
 
-for i in range(50):
+for i in range(60):
     data["# Losses"].append(i)
     data["Total lost"].append(total_losses)
     data["Next bet:"].append(bet*(multiplier**i))
