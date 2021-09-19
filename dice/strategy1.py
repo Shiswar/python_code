@@ -25,7 +25,8 @@ def go(m, l, u, b):
 
     number_of_bets = 0
 
-    print()
+    total_wins=0
+    total_losses=0
 
     def play(bet, ov_un):
         spin = random.randint(0, 100)
@@ -55,10 +56,12 @@ def go(m, l, u, b):
         if result > 0:
             bet_amount = reset
             win_count += 1
+            total_wins += 1
             loss_run = 0
         else:
             bet_amount = bet_amount * bet_multiplier
             loss_count += 1
+            total_losses += 1
             loss_run += 1
 
         # Track lows and highs
@@ -71,7 +74,7 @@ def go(m, l, u, b):
         number_of_bets += 1
 
         # time.sleep(0.01)
-    return (money, highest, lowest, number_of_bets)
+    return (money, highest, lowest, number_of_bets, total_wins, total_losses)
 
 w = 0
 l = 0
@@ -80,6 +83,7 @@ av_hi = 0
 av_lo = 0
 
 hist = []
+wl = []
 
 num = 0
 profit = 0
@@ -87,20 +91,21 @@ profit = 0
 starting_cash = 50
 loss_cutoff = 40
 win_cutoff = 55
-bet = 0.005
+bet = 0.0005
 
-for i in range(5):
-    m, hi, lo, n = go(starting_cash, loss_cutoff, win_cutoff, bet)
+for i in range(10):
+    m, hi, lo, n, tw, tl = go(starting_cash, loss_cutoff, win_cutoff, bet)
     if m <= loss_cutoff:
         l += 1
         av_hi += hi
-        hist.append("L")
+        hist.append("L ("+str(tw)+"/"+str(tl)+")")
         profit -= (starting_cash - loss_cutoff)
     else:
         w += 1
         av_lo += lo
-        hist.append("W")
+        hist.append("W ("+str(tw)+"/"+str(tl)+")")
         profit += (win_cutoff - starting_cash)
+    wl.append(tw/tl)
     num += n
     
 
@@ -117,5 +122,6 @@ print("%Wins",w/(w+l))
 print("Average high on loss", av_hi/l if l > 0 else av_hi)
 print("Average low on win", av_lo/w if w > 0 else av_lo)
 print("Average number of bets", num/(w+l))
-print(hist)
-print(profit) 
+#print(hist)
+print("Average win% per game:",sum(wl)/len(wl))
+print("Profit",profit) 
