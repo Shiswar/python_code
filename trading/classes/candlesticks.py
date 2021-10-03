@@ -1,7 +1,3 @@
-
-
-
-
 class Candle:
     def __init__(self, open, high, low, close, volume):
        self.open = open
@@ -24,6 +20,9 @@ class Candle:
 
     def wick_ratio(self):
         return (self.wick_size) / self.body
+    
+    def body_ratio(self):
+        return self.body / (self.wick_size)
     
     def top_wick_ratio(self):
         return self.topwick_size / self.body
