@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import json
-from Classes.candlesticks import Candle as cs
-from Classes.three_stick_pattern import ThreeStickPattern as tsp
+
+from candlesticks import * 
 
 base_url = "https://api.gemini.com/v2/candles"
 symbol = "ethusd"
-timeframe = "1hr"
+timeframe = "6hr"
 
 url = f"{base_url}/{symbol}/{timeframe}"
 
@@ -42,10 +42,16 @@ def to_dataframe(json_data: str) -> pd.DataFrame:
     )
     return candles_df
 
-def to_candle_list(json_data: str):
-    dump = json.dumps(json_data)
-    print(dump)
-    
+def to_candle_group(json_data: str):
+    df = to_dataframe(json_data)
+    open = df["Open"]
+    close = df["Close"]
+    high = df["High"]
+    low = df["Low"]
+    volume = df["Volume"]
+    c = CandleGroup(open, high, low, close, volume)
+    return c
+        
 
 
 def plot_down_arrow():
@@ -54,12 +60,23 @@ def plot_down_arrow():
     plt.plot([x[idx]+1, x[idx]], [val['High'] + 60, val['High'] + 50], color = "red")
 
 def plot_up_arrow():
-    plt.plot([x[idx], x[idx]], [val['High'] + 50, val['High'] + 60], color = "blue")
-    plt.plot([x[idx]-1, x[idx]], [val['High'] + 50, val['High'] + 60], color = "blue")
-    plt.plot([x[idx]+1, x[idx]], [val['High'] + 50, val['High'] + 60], color = "blue")
+    plt.plot([x[idx], x[idx]], [val['Low'] - 50, val['Low'] - 60], color = "blue")
+    plt.plot([x[idx]-1, x[idx]], [val['Low'] - 60, val['Low'] - 50], color = "blue")
+    plt.plot([x[idx]+1, x[idx]], [val['Low'] - 60, val['Low'] - 50], color = "blue")
 
 df = to_dataframe(response.json())
-# to_candle_list(response.json())
+
+candle_list = to_candle_group(response.json())
+
+
+
+
+
+
+
+
+
+
 
 # for index, candlestick in df.iterrows():
     # if str(candlestick["Time"]) == "2021-09-18 12:00:00":
@@ -79,41 +96,29 @@ df = to_dataframe(response.json())
 x = np.arange(0,len(df))
 fig, ax = plt.subplots(1, figsize=(12,6))
 
-close = df["Close"]
-for i in range(1, len(close)-2):
-    sticks = [close[i-1], close[i], close[i+1]]
-    three = tsp(sticks)
-    
-    if three.minima():
-        plot_down_arrow()
-        
-    elif three.maxima:
-        plot_up_arrow()
-
+# maximas = candle_list.get_maxima_indexes()
+# minimas = candle_list.get_minima_indexes()
+# three_green_candles = candle_list.get_three_green_candles()
+# bearish_engulfing = candle_list.get_bearish_engulfing_2()
+hanging_man = candle_list.hanging_man_5()
 
 for idx, val in df.iterrows():
     color = "red" if val["Open"] > val["Close"] else "green"
 
     plt.plot([x[idx], x[idx]], [val['Low'], val['High']], color = color)
-    plt.plot([x[idx]-0.1, x[idx]], [val['Open'], val['Open']])
-    plt.plot([x[idx], x[idx]+0.1], [val['Close'], val['Close']])
-    # if hammer(val):
+    plt.plot([x[idx]-0.2, x[idx]], [val['Open'], val['Open']], color = color)
+    plt.plot([x[idx], x[idx]+0.2], [val['Close'], val['Close']], color = color)
+
+    # if idx in maximas:
     #     plot_down_arrow()
-    
- 
-
-
-    
-    
-    # last_3 = tsp.ThreeStickPattern[c0, c1, c2]
-
-    # if last_3.deliberation:
+    # if idx in minimas:
+    #     plot_up_arrow()
+    # if idx in three_green_candles:
+    #     plot_up_arrow()
+    # if idx in bearish_engulfing:
     #     plot_down_arrow()
+    if idx in hanging_man:
+        plot_down_arrow()
 
-
-
-
-    # if str(val["Time"]) == "2021-09-12 12:00:00":
-    #     break
 
 plt.show()
