@@ -1,11 +1,23 @@
 
 
+from classes.candlesticks import Candle
+
+
 class ThreeStickPattern(list):
     def __init_i(self, candlesticks):
         self.candlesticks = candlesticks
-        self.x2 = candlesticks[2]
-        self.x1 = candlesticks[1]
-        self.x0 = candlesticks[0]
+        self.x2: Candle = candlesticks[2]
+        self.x1: Candle = candlesticks[1]
+        self.x0: Candle = candlesticks[0]
+
+    def x0(self):
+        return self.x0
+    
+    def x1(self):
+        return self.x1
+    
+    def x2(self):
+        return self.x2
     
     def deliberation(self):
         # If all bullish candles
@@ -23,11 +35,11 @@ class ThreeStickPattern(list):
                         return True
     
     def minima(self):
-        if (self.x0.close < self.x1.close and self.x2.close < self.x1.close):
+        if (self.x0().close < self.x1().close and self.x2().close < self.x1().close):
             return True
             
     def maxima (self):
-        if (self.x0.close > self.x1.close and self.x2.close > self.x1.close):
+        if (self.x0().close > self.x1().close and self.x2().close > self.x1().close):
             return True
 
 
