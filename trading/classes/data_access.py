@@ -14,18 +14,6 @@ url = f"{base_url}/{symbol}/{timeframe}"
 
 response = requests.get(url=url)
 
-# def hammer(candlestick):
-#     top_wick_size = candlestick["High"] - max(candlestick["Open"], candlestick["Close"])
-#     bot_wick_size = min(candlestick["Open"], candlestick["Close"]) - candlestick["Low"]
-#     body_size = abs(candlestick["Open"] - candlestick["Close"])+0.00001
-    
-#     if (top_wick_size/body_size) >= 3 and (bot_wick_size/body_size) <= 1.2:
-#         print(candlestick)
-#         return True
-#     elif (bot_wick_size/body_size) >= 3 and  (top_wick_size/body_size)<= 1.2:
-#         print(candlestick)
-#         return True
-
 
 def to_dataframe(json_data: str) -> pd.DataFrame:
     candles_df = pd.DataFrame(json_data)
@@ -104,7 +92,6 @@ hanging_man = candle_list.hanging_man_5()
 
 for idx, val in df.iterrows():
     color = "red" if val["Open"] > val["Close"] else "green"
-
     plt.plot([x[idx], x[idx]], [val['Low'], val['High']], color = color)
     plt.plot([x[idx]-0.2, x[idx]], [val['Open'], val['Open']], color = color)
     plt.plot([x[idx], x[idx]+0.2], [val['Close'], val['Close']], color = color)
@@ -119,6 +106,17 @@ for idx, val in df.iterrows():
     #     plot_down_arrow()
     if idx in hanging_man:
         plot_down_arrow()
+
+        s1 = cs(open_d[idx], high_d[idx], low_d[idx], close_d[idx], volume_d[idx])
+        s2 = cs(open_d[idx + 1], high_d[idx + 1] , low_d[idx + 1], close_d[idx + 1], volume_d[idx + 1])
+        s3 = cs(open_d[idx + 2], high_d[idx + 2] , low_d[idx + 2], close_d[idx + 2], volume_d[idx + 2])
+
+        three = tsp([s1, s2, s3])
+
+        if three.maxima():
+            plot_down_arrow()
+        elif three.minima():
+            plot_up_arrow()
 
 
 plt.show()

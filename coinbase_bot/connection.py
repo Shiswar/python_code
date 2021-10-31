@@ -1,0 +1,2 @@
+# API KEY: 9tWGcMEJcc1uSRrm
+# SECRET: Szdb0bixFc9ctcBtGMExL456okj27zUN
